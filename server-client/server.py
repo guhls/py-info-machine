@@ -1,7 +1,7 @@
-import socket, tqdm, os
+import socket, tqdm, os, platform
 
 
-HOST = "localhost"
+HOST = str(platform.uname().node)
 PORT = 50000
 
 BUFFER_SIZE = 1024
