@@ -4,7 +4,7 @@ import socket, tqdm, os
 HOST = "localhost"
 PORT = 50000
 
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 1024
 SEPARATOR = ","
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

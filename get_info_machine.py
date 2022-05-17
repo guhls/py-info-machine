@@ -2,7 +2,7 @@ import os, platform, psutil, socket
 import tqdm
 import pandas as pd
 
-from demo_minio import push_to_minio
+from conn_opnvpn import connect_openvpn, disconnect_openvpn
 
 
 def main():
@@ -29,14 +29,16 @@ def main():
     return filename
 
 
-def send_df_to_server():
+def send_csv_to_server():
+    connect_openvpn()
+
     SEPARATOR = ","
     BUFFER_SIZE = 4096
 
     filename = main()
     filesize = os.path.getsize(filename)
 
-    HOST = "127.0.0.1"
+    HOST = "DESKTOP-QPNNSCN"
     PORT = 50000
 
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -67,7 +69,8 @@ def send_df_to_server():
 
     # close the socket
     s.close()
+    disconnect_openvpn()
 
 
 if __name__ == "__main__":
-    send_df_to_server()
+    send_csv_to_server()
