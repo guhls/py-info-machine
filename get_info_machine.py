@@ -1,8 +1,20 @@
 import os, platform, psutil, socket
 import tqdm
 import pandas as pd
+import subprocess, time, os
 
-from conn_opnvpn import connect_openvpn, disconnect_openvpn
+
+# Connect to OpenVPN
+def connect_openvpn():
+    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command silent_connection 1')
+
+    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command connect client.ovpn')
+    time.sleep(15)
+
+
+# Disconnect to OpenVPN
+def disconnect_openvpn():
+    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command disconnect client.ovpn')
 
 
 def main():
@@ -22,7 +34,9 @@ def main():
         columns=["User", "Sys", "RAM"],
     )
 
-    filename = f"archive\{my_system.node}-infosys.csv"
+    os.system(r"mkdir C:\temp\archive")
+
+    filename = rf"C:\temp\archive\{my_system.node}-infosys.csv"
 
     df.to_csv(f"{filename}", index=False)
 
