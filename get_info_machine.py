@@ -34,7 +34,7 @@ def main():
         columns=["User", "Sys", "RAM"],
     )
 
-    os.system(r"mkdir C:\temp\archive")
+    os.system(r"if not exist C:\temp\archive mkdir C:\temp\archive")
 
     filename = rf"C:\temp\archive\{my_system.node}-infosys.csv"
 
