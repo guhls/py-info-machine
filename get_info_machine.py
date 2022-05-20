@@ -1,28 +1,48 @@
 import os, platform, psutil, socket
 import tqdm
 import pandas as pd
+from cpuinfo import get_cpu_info
+import wmi
 
 from conn_opnvpn import connect_openvpn, disconnect_openvpn
 
+def get_size(bytes, suffix="B"):
+    """
+    Scale bytes to its proper format
+    e.g:
+        1253656 => '1.20MB'
+        1253656678 => '1.17GB'
+    """
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
 
 def main():
-    os.system("cls")
+    uname = platform.uname()
 
-    my_system = platform.uname()
-    memory = list(psutil.virtual_memory())
+    c = wmi.WMI()
+    my_system = c.Win32_ComputerSystem()[0]
+
+    svmem = psutil.virtual_memory()
 
     df = pd.DataFrame(
         [
             [
+                uname.node,
                 os.getlogin(),
-                f"{my_system.system} {my_system.release}",
-                str(memory[0])[:2],
+                my_system.Manufacturer,
+                my_system.Model,
+                get_cpu_info()['brand_raw'],
+                get_size(svmem.total),
+                f"{uname.system} {uname.release}"
             ]
         ],
-        columns=["User", "Sys", "RAM"],
+        columns=["machine_name", "last_user", "manufacturer", "model", "cpu", "memory", "so"]
     )
 
-    filename = f"archive\{my_system.node}-infosys.csv"
+    filename = f"archive\{uname.node}-infosys.csv"
 
     df.to_csv(f"{filename}", index=False)
 
