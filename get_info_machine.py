@@ -1,10 +1,11 @@
-import os, platform, psutil, socket
+import os, platform, psutil, socket, subprocess
 import tqdm
 import pandas as pd
 from cpuinfo import get_cpu_info
 import wmi
 
 from conn_opnvpn import connect_openvpn, disconnect_openvpn
+
 
 def get_size(bytes, suffix="B"):
     """
@@ -19,6 +20,7 @@ def get_size(bytes, suffix="B"):
             return f"{bytes:.2f}{unit}{suffix}"
         bytes /= factor
 
+
 def main():
     uname = platform.uname()
 
@@ -26,6 +28,8 @@ def main():
     my_system = c.Win32_ComputerSystem()[0]
 
     svmem = psutil.virtual_memory()
+
+    hd_info = subprocess.check_output(["wmic", "diskdrive", "get", "model"]).decode("utf-8").split("\n")
 
     df = pd.DataFrame(
         [
@@ -36,10 +40,11 @@ def main():
                 my_system.Model,
                 get_cpu_info()['brand_raw'],
                 get_size(svmem.total),
+                hd_info[1].split("\r")[:-2][0].strip(),
                 f"{uname.system} {uname.release}"
             ]
         ],
-        columns=["machine_name", "last_user", "manufacturer", "model", "cpu", "memory", "so"]
+        columns=["machine_name", "last_user", "manufacturer", "model", "cpu", "memory", "disk_drive", "so"]
     )
 
     filename = f"archive\{uname.node}-infosys.csv"
@@ -93,4 +98,4 @@ def send_csv_to_server():
 
 
 if __name__ == "__main__":
-    send_csv_to_server()
+    main()

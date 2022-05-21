@@ -1,2 +1,2 @@
-machine_name,last_user,manufacturer,model,cpu,memory,so
-gustavonot,Gustavo,Dell Inc.,Inspiron 5567,Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz,7.88GB,Windows 10
+machine_name,last_user,manufacturer,model,cpu,memory,disk_drive,so
+gustavonot,Gustavo,Dell Inc.,Inspiron 5567,Intel(R) Core(TM) i5-7200U CPU @ 2.50GHz,7.88GB,WDC WDS240G2G0A-00JH30,Windows 10
