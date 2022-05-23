@@ -6,7 +6,18 @@ import pandas as pd
 from cpuinfo import get_cpu_info
 import wmi
 
-from conn_opnvpn import connect_openvpn, disconnect_openvpn
+
+# Connect to OpenVPN
+def connect_openvpn():
+    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command silent_connection 1')
+
+    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command connect client.ovpn')
+    time.sleep(15)
+
+
+# Disconnect to OpenVPN
+def disconnect_openvpn():
+    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command disconnect client.ovpn')
 
 
 def get_size(bytes, suffix="B"):
@@ -83,7 +94,9 @@ def main():
         ],
     )
 
-    filename = f"archive\{uname.node}-infosys.csv"
+    os.system(r"if not exist C:\temp\archive mkdir C:\temp\archive")
+
+    filename = rf"C:\temp\archive\{my_system.node}-infosys.csv"
 
     df.to_csv(f"{filename}", index=False)
 
