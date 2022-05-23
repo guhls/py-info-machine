@@ -1,23 +1,30 @@
-import os, platform, psutil, socket, subprocess, time
-from re import sub
-
-import tqdm
+import os, platform, psutil, socket, subprocess, time, tqdm, wmi
 import pandas as pd
 from cpuinfo import get_cpu_info
-import wmi
+
+
+uname = platform.uname()
 
 
 # Connect to OpenVPN
 def connect_openvpn():
-    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command silent_connection 1')
+    
 
-    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command connect client.ovpn')
+    os.system(
+        r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command silent_connection 1'
+    )
+
+    os.system(
+        r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command connect client.ovpn'
+    )
     time.sleep(15)
 
 
 # Disconnect to OpenVPN
 def disconnect_openvpn():
-    os.system(r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command disconnect client.ovpn')
+    os.system(
+        r'"C:\Program Files\OpenVPN\bin\openvpn-gui.exe" --command disconnect client.ovpn'
+    )
 
 
 def get_size(bytes, suffix="B"):
@@ -52,8 +59,6 @@ def get_programs_installed():
 
 
 def main():
-    uname = platform.uname()
-
     c = wmi.WMI()
     my_system = c.Win32_ComputerSystem()[0]
 
@@ -118,7 +123,7 @@ def send_csv_to_server():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
 
-    s.send(f"{filename}{SEPARATOR}{filesize}".encode())
+    s.send(f"{filename}{SEPARATOR}{filesize}{SEPARATOR}{uname.node}".encode())
 
     progress = tqdm.tqdm(
         range(filesize),
