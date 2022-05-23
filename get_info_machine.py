@@ -1,4 +1,6 @@
 import os, platform, psutil, socket, subprocess
+from re import sub
+
 import tqdm
 import pandas as pd
 from cpuinfo import get_cpu_info
@@ -21,6 +23,23 @@ def get_size(bytes, suffix="B"):
         bytes /= factor
 
 
+def get_programs_installed():
+    data = subprocess.check_output(["wmic", "product", "get", "name"])
+    a = str(data)
+
+    programs_in_machine = []
+
+    # try block
+    try:
+
+        # arrange the string
+        for i in range(len(a)):
+            programs_in_machine.append(a.split("\\r\\r\\n")[6:][i])
+
+    except IndexError as e:
+        return ",".join([programs.strip() for programs in programs_in_machine])
+
+
 def main():
     uname = platform.uname()
 
@@ -29,7 +48,13 @@ def main():
 
     svmem = psutil.virtual_memory()
 
-    hd_info = subprocess.check_output(["wmic", "diskdrive", "get", "model"]).decode("utf-8").split("\n")
+    hd_info = (
+        subprocess.check_output(["wmic", "diskdrive", "get", "model"])
+        .decode("utf-8")
+        .split("\n")
+    )
+
+    programs = get_programs_installed()
 
     df = pd.DataFrame(
         [
@@ -38,13 +63,24 @@ def main():
                 os.getlogin(),
                 my_system.Manufacturer,
                 my_system.Model,
-                get_cpu_info()['brand_raw'],
+                get_cpu_info()["brand_raw"],
                 get_size(svmem.total),
                 hd_info[1].split("\r")[:-2][0].strip(),
-                f"{uname.system} {uname.release}"
+                f"{uname.system} {uname.release}",
+                programs,
             ]
         ],
-        columns=["machine_name", "last_user", "manufacturer", "model", "cpu", "memory", "disk_drive", "so"]
+        columns=[
+            "machine_name",
+            "last_user",
+            "manufacturer",
+            "model",
+            "cpu",
+            "memory",
+            "disk_drive",
+            "so",
+            "programs_installed",
+        ],
     )
 
     filename = f"archive\{uname.node}-infosys.csv"
@@ -98,4 +134,4 @@ def send_csv_to_server():
 
 
 if __name__ == "__main__":
-    main()
+    send_csv_to_server()
