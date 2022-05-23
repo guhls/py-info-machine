@@ -1,7 +1,7 @@
 import os, platform, psutil, socket, subprocess, time, tqdm, wmi
 import pandas as pd
 from cpuinfo import get_cpu_info
-
+from multiprocessing import freeze_support
 
 uname = platform.uname()
 
@@ -59,6 +59,8 @@ def get_programs_installed():
 
 
 def main():
+    freeze_support()
+
     c = wmi.WMI()
     my_system = c.Win32_ComputerSystem()[0]
 
