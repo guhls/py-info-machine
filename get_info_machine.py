@@ -1,4 +1,4 @@
-import os, platform, psutil, socket, subprocess
+import os, platform, psutil, socket, subprocess, time
 from re import sub
 
 import tqdm
@@ -96,7 +96,7 @@ def main():
 
     os.system(r"if not exist C:\temp\archive mkdir C:\temp\archive")
 
-    filename = rf"C:\temp\archive\{my_system.node}-infosys.csv"
+    filename = rf"C:\temp\archive\{uname.node}-infosys.csv"
 
     df.to_csv(f"{filename}", index=False)
 
