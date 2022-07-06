@@ -1,4 +1,5 @@
 import os, platform, psutil, socket, subprocess, time, tqdm, wmi
+import datetime as dt
 import pandas as pd
 from cpuinfo import get_cpu_info
 from multiprocessing import freeze_support
@@ -72,7 +73,7 @@ def main():
         .split("\n")
     )
 
-    programs = get_programs_installed()
+    # programs = get_programs_installed()
 
     df = pd.DataFrame(
         [
@@ -85,7 +86,7 @@ def main():
                 get_size(svmem.total),
                 hd_info[1].split("\r")[:-2][0].strip(),
                 f"{uname.system} {uname.release}",
-                programs,
+                dt.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
             ]
         ],
         columns=[
@@ -97,7 +98,7 @@ def main():
             "memory",
             "disk_drive",
             "so",
-            "programs_installed",
+            "last_sync"
         ],
     )
 
@@ -125,7 +126,7 @@ def send_csv_to_server():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((HOST, PORT))
 
-    s.send(f"{filename}{SEPARATOR}{filesize}{SEPARATOR}{uname.node}".encode())
+    s.send(f"{filename}{SEPARATOR}{filesize}".encode())
 
     progress = tqdm.tqdm(
         range(filesize),
